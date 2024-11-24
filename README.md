@@ -20,6 +20,13 @@ Cloud Engineering Project 1 - Simple web app using AWS architecture
 ## Phase 1 - Research
 tbd
 
+### Availability
+An application/service is **highly available** if it can be served by some instance (at all times). 
+
+For example, **AWS's RDS** (relational database service) provides several features that can ensure high availability of the service (in this case the access to a database):
+- multi-AZ (availability zone) creation --> creates an additional instance in a different AZ to provide automatic failover in case something happens to the main instance.
+- read-replica --> creates 1 (or more) copies of the database in the same or different AZ or even a different region. This eleviates read traffic from the main database instance. Replicas are asynchronously updated and synced with the main database to ensure they contain up-to-date data
+
 ## Phase 2 - Architecture design
 tbd
 
