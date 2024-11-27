@@ -1,6 +1,15 @@
 # cep-1-simple-app
 Cloud Engineering Project 1 - Simple web app using AWS architecture
 
+## TL;DR
+
+### Learnings
+tbd
+
+### Future work
+tbd
+
+
 ## Short Description
 This project features a simple web app UI that facilitates CRUD operations with a database and displays the results correctly.
 
@@ -40,8 +49,11 @@ A dynamic website is generated "on-the-fly", meaning on the server-side at runti
 For dynamic websites AWS offers compute (**EC2**) resources that run the website content.
 
 
-> [!IMPORTANT]
-> For this project we will need a **dynamic website** that can query and update database content.
+> [!NOTE]
+> For this project we will use a **dynamic website** that can query and update database content.
+
+> [!TIP]
+> The database access can also be realized with a static website using cloud functions (Lambda) or calling the API of a backend that does the query work. The latter is a bit over the top for this minimal application. Using a Lambda function could be an interesting change to explore from both, a functionality perspective and a cost perspective. (Lambda functions are paid by execution)
 
 
 ### 💾 Storage
@@ -91,4 +103,9 @@ tbd
 
 
 ## Phase 4 - Testing
+tbd
+
+
+
+## Limitations & Potential Next Steps
 tbd
