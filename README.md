@@ -67,7 +67,16 @@ For example, **AWS's RDS** (relational database service) provides several featur
 - *read-replica* --> creates 1 (or more) copies of the database in the same or different AZ or even a different region. This eleviates read traffic from the main database instance. Replicas are asynchronously updated and synced with the main database to ensure they contain up-to-date data
 
 #### Scalability
-Refers to horizontal or vertical scaling of a service. **Horizontal scaling** means adding more instances of the same service (e.g. EC2 instances) to deal with the workload. **Vertical scaling means** an instance increases/decreases its performace internally (e.g. switching the EC2 type to a more powerful one).
+Refers to horizontal or vertical scaling of a service. **Horizontal scaling** means adding more instances of the same service (e.g. EC2 instances) to deal with the workload. **Vertical scaling** means an instance increases/decreases its performace internally (e.g. switching the EC2 type to a more powerful one).
+
+#### Auto-scaling groups
+AWS's **EC2** component offers another feature that offers both, availability, and scalability: _auto-scale groups_ (ASGs). An ASG allows to automatically spawn and re-spawn (in case of instance failure / unhealthiness) compute instances based on the configuration. This can happen in a single or multiple subnets, i.e. in a single or multiple AZs.
+
+For ASGs the following needs to be available / specified:
+- a template for compute instances (AMI - Amazon Machine Image) -> this will be the blueprint for each new instance launched
+- subnets to provide component in
+- min, desired, and max number of instances
+- a **load balancer** to route traffic to the instances (!)
 
 
 
