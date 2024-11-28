@@ -93,7 +93,26 @@ For ASGs the following needs to be available / specified:
 
 
 ## Phase 2 - Architecture Design
-tbd
+For the architecture I created three different views: (1) a basic design to realize only the functionality for this project, (2) a design that is highly available, and (3) a design that is highly available and highly scalable.
+
+### Basic design
+![Basic Design](./img/cep-1-basic-design.png)
+
+The basic design focuses on functionality only: dedicated VPC with public and private subnet, an Internet Gateway to facilitate access to the outside world, an EC2 instance to host the dynamic website, and an RDS (PostgreSQL) instance to handle the data and CRUD requests.
+
+| :white_check_mark: Pros | :o: Short-comings |
+| :-- | :-- |
+| simple design that accomplishes the requirements | no mechanisms to handle potential failure |
+| recommended isolation of data into private subnet (security) |  |
+| relatively cheap implementation | no resource handling for downtimes |
+
+
+### Highly available design
+![HA Design](./img/cep-1-ha.png)
+
+
+### Highly available and highly scalable design
+![HA-HS Design](./img/cep-1-ha-hs.png)
 
 
 
