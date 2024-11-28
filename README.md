@@ -95,6 +95,9 @@ For ASGs the following needs to be available / specified:
 ## Phase 2 - Architecture Design
 For the architecture I created three different views: (1) a basic design to realize only the functionality for this project, (2) a design that is highly available, and (3) a design that is highly available and highly scalable.
 
+> [!IMPORTANT]
+> For the purpose of this project, I will implement a version of both, designs 2 and 3. I hope to gain relevant experience dealing with high availability and scalability in a fairly simple overall project.
+
 ### Basic design
 ![Basic Design](./img/cep-1-basic-design.png)
 
@@ -102,17 +105,33 @@ The basic design focuses on functionality only: dedicated VPC with public and pr
 
 | :white_check_mark: Pros | :o: Short-comings |
 | :-- | :-- |
-| simple design that accomplishes the requirements | no mechanisms to handle potential failure |
-| recommended isolation of data into private subnet (security) |  |
+| simple design that accomplishes the requirements | no mechanisms to handle potential failure of components |
+| recommended isolation of data into private subnet (security) | no user authentication / no separation of user data |
 | relatively cheap implementation | no resource handling for downtimes |
 
 
 ### Highly available design
 ![HA Design](./img/cep-1-ha.png)
 
+This design includes a redundant EC2 instance in a differt AZ to increase availability as well as a load balancer to ensure traffic can be routed to these instances. The database has a failover instance in a different AZ to ensure availability of data, even if the main instance fails.
+
+| :white_check_mark: Pros | :o: Short-comings |
+| :-- | :-- |
+| design that ensures high availability of the application |  |
+| recommended isolation of data into private subnet (security) | no user authentication / no separation of user data |
+| adequate cost-for-service balance ❓ |  |
+
 
 ### Highly available and highly scalable design
 ![HA-HS Design](./img/cep-1-ha-hs.png)
+
+This design builds on the previous design but introduces auto scaling groups for the EC2 instances that host the website. This provides scalability to the aplication in case higher traffic occurs or is expected. However, this sophisticated design requires substantial (AWS) resources and may not be a good choice for the simplicity of the application.
+
+| :white_check_mark: Pros | :o: Short-comings |
+| :-- | :-- |
+| sophisticated design for this use case; ensures both, high availability and high scalability | given the simplicity of the application, this is overkill (learning FTW) |
+| recommended isolation of data into private subnet (security) | no user authentication / no separation of user data |
+| can react to increasing/decreasing traffic | potentially costly |
 
 
 
