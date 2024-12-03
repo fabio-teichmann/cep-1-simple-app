@@ -136,7 +136,25 @@ This design builds on the previous design but introduces auto scaling groups for
 
 
 ## Phase 3 - Implementation
-tbd
+Before implementing any of the designs above, I first need to prepare the scripts for a basic app that will use the database capabilities and display some results in an UI.
+
+### Suitable app example
+For the basic app I will use a basic trip scheduler that allows to view, create, edit, and delete trips. Trips are displayed to the user accordingly. To achieve this I will need to create the following:
+
+- a basic frontend to display the trips table to the user
+- a database that stores the trip information
+- a backend that handles requests to the database and forwards the information to the frontend
+
+#### Connecting to a db and perform queries
+To test connecting to an RDS DB, I'm building on example code from the [AWS documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.Connecting.Python.html). Ultimately, I need to figure out how to set up the db instance with the db schema that the application needs.
+
+| :pushpin: Actions | :mag_right: Observations | :o: Issues |
+| :-- | :-- | :-- |
+| I created a free-tier test db instance linked to the VPC for this project. | :white_check_mark: Instance created and functional | |
+| I tried using the example code to make a connection (from my loacal machine/IDE) to that instance. | :x: Failed to connect. | Potentially missing permissions / access credentials |
+| I configured a local config profile with access keys and retried. | :x: Failed to connect. | Potentially missing network permissions |
+| I created/configured a security group to allow IP/TCP traffic and linked it to the VPC. Retried the script. | :x: Failed to connect. | Maybe an issue of who tries to connect to the instance? I.e. I expect the db instance to be located in a private subnet of the VPC and to my knowledge no external (to AWS) entity would be allowed to access. Checking rds instances with AWS CLI `aws rds describe-db-instances` it states that public access is denied. |
+| Next, I created a EC2 instance, SSH into it and try to ping the db instance to verify they can talk to each other. | ... | ... |
 
 
 
