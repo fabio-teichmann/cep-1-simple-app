@@ -145,6 +145,11 @@ For the basic app I will use a basic trip scheduler that allows to view, create,
 - a database that stores the trip information
 - a backend that handles requests to the database and forwards the information to the frontend
 
+
+#### Simple backend to handle CRUD operation requests
+I set up a simple BE using FastAPI and defined the 4 basic CRUD ops to handle trips. The BE needs to communicate with both the frontend and the database to handle requests effectively.
+
+
 #### Connecting to a db and perform queries
 To test connecting to an RDS DB, I'm building on example code from the [AWS documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.Connecting.Python.html). Ultimately, I need to figure out how to set up the db instance with the db schema that the application needs.
 
@@ -154,7 +159,7 @@ To test connecting to an RDS DB, I'm building on example code from the [AWS docu
 | I tried using the example code to make a connection (from my loacal machine/IDE) to that instance. | :x: Failed to connect. | Potentially missing permissions / access credentials |
 | I configured a local config profile with access keys and retried. | :x: Failed to connect. | Potentially missing network permissions |
 | I created/configured a security group to allow IP/TCP traffic and linked it to the VPC. Retried the script. | :x: Failed to connect. | Maybe an issue of who tries to connect to the instance? I.e. I expect the db instance to be located in a private subnet of the VPC and to my knowledge no external (to AWS) entity would be allowed to access. Checking rds instances with AWS CLI `aws rds describe-db-instances` it states that public access is denied. |
-| Next, I created a EC2 instance, SSH into it and try to ping the db instance to verify they can talk to each other. | ... | ... |
+| Next, I created a EC2 instance, set up a connection to the db and tried to SSH into the instance to verify the connection. | SSH connection continuously timed out even though security group rules are in place. The EC2 instance has no public IP for now. | ... |
 
 
 
