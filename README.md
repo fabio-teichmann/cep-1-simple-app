@@ -145,6 +145,10 @@ For the basic app I will use a basic trip scheduler that allows to view, create,
 - a database that stores the trip information
 - a backend that handles requests to the database and forwards the information to the frontend
 
+These will vary depending on the architecture I am implementing. Let's start with the most basic design.
+
+
+### Design 1 - Basic
 
 #### Simple backend to handle CRUD operation requests
 I set up a simple BE using FastAPI and defined the 4 basic CRUD ops to handle trips. The BE needs to communicate with both the frontend and the database to handle requests effectively.
@@ -159,7 +163,21 @@ To test connecting to an RDS DB, I'm building on example code from the [AWS docu
 | I tried using the example code to make a connection (from my loacal machine/IDE) to that instance. | :x: Failed to connect. | Potentially missing permissions / access credentials |
 | I configured a local config profile with access keys and retried. | :x: Failed to connect. | Potentially missing network permissions |
 | I created/configured a security group to allow IP/TCP traffic and linked it to the VPC. Retried the script. | :x: Failed to connect. | Maybe an issue of who tries to connect to the instance? I.e. I expect the db instance to be located in a private subnet of the VPC and to my knowledge no external (to AWS) entity would be allowed to access. Checking rds instances with AWS CLI `aws rds describe-db-instances` it states that public access is denied. |
-| Next, I created a EC2 instance, set up a connection to the db and tried to SSH into the instance to verify the connection. | SSH connection continuously timed out even though security group rules are in place. The EC2 instance has no public IP for now. | ... |
+| Next, I created a EC2 instance, set up a connection to the db and tried to SSH into the instance to verify the connection. | SSH connection continuously timed out even though security group rules are in place. The EC2 instance has no public IP for now. | Missing public IP address prohibits the SSH access (my understanding). |
+| Recreated an EC2 instance with public IP, set up connection to the db and try the same. | :white_check_mark: EC2 instance with public IP created<br>:white_check_mark: SSH access to EC2 worked<br>:white_check_mark: Connection to RDS worked | --- |
+
+
+Commands to connect to db:
+```bash
+psql -h <db-endpoint> -U <user-name> -d <db-name> -p <port>
+```
+_Note_: if nothing is set up, use `postgres` as a default db-name.
+
+
+#### :bulb: Learnings:
+- connecting to an EC2 instance **without public IP** is more cumbersome and needs additional setups --> I will explore this for the other designs, as they naturally involve architecture that is required (e.g. elastic load balancer)
+- ensure that EC2 and RDS are **located in the same VPC** to connect
+- always ensure the **proper security group rules** are in place
 
 
 
