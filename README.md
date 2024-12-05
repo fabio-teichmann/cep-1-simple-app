@@ -196,7 +196,7 @@ The implementation of the networking component will vary depending on the archit
 #### Connecting to a db and perform queries
 To test connecting to an RDS DB, I'm building on example code from the [AWS documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.Connecting.Python.html). Ultimately, I need to figure out how to set up the db instance with the db schema that the application needs.
 
-| :pushpin: Actions | :mag_right: Observations | :o: Issues |
+| :pushpin: Action(s) | :mag_right: Observations | :o: Issues |
 | :-- | :-- | :-- |
 | I created a free-tier test db instance linked to the VPC for this project. | :white_check_mark: Instance created and functional | |
 | I tried using the example code to make a connection (from my loacal machine/IDE) to that instance. | :x: Failed to connect. | Potentially missing permissions / access credentials |
@@ -207,10 +207,39 @@ To test connecting to an RDS DB, I'm building on example code from the [AWS docu
 
 
 Commands to connect to db:
+
+Installing psql inside the EC2 instance (amazon linux image):
+```bash
+sudo yum update
+sudo yum search "postgres"
+sudo yum install postgres16 -y # corresponds with the engine in RDS
+```
+
+Connecting to RDS instance:
 ```bash
 psql -h <db-endpoint> -U <user-name> -d <db-name> -p <port>
 ```
 _Note_: if nothing is set up, use `postgres` as a default db-name.
+
+
+#### Setting up RDS with db schema
+The RDS instance I had setup previously did not contain the desired db schema for the simple app (nor did it include any sample data to play with later). I could set that up manually in the previous step (SSH into EC2, connect to RDS, create database and schema). However, for obvious reasons I don't want to do it that way (manual, cumbersome, error-prone, not automated). Hence, I am looking now into setting up a db instance that is pre-configured with the db schema (and sample data) that I need.
+
+
+| :pushpin: Action(s) | :mag_right: Observations | :o: Issues |
+| :-- | :-- | :-- |
+| Researching how I can achieve the db instance being setup with the right schema (and sample data) automatically. | - need a database dump (can be stored in S3)<br>- can use an EC2 instance to trigger the configuration within an existing RDS instance. |  |
+|  |  |  |
+
+
+EC2 start-up script for DB config:
+
+tbd
+
+
+
+> [!IMPORTANT]
+> The degree of automation seems still somewhat limited (e.g. need to manually setup the RDS instance). In a future iteration, I will work on using IaC (TerraForm) to accomplish a fully automated setup of the infrastructure. Also, containerization seems to be able to simplify a couple of things in this setup.
 
 
 #### :bulb: Learnings:
