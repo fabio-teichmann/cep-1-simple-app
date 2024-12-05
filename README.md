@@ -145,14 +145,53 @@ For the basic app I will use a basic trip scheduler that allows to view, create,
 - a database that stores the trip information
 - a backend that handles requests to the database and forwards the information to the frontend
 
-These will vary depending on the architecture I am implementing. Let's start with the most basic design.
+#### Simple frontend
+I am no frontend expert, so I will start off by using a suggestion from ChatGPT. I used the following prompt:
 
+```txt
+You are a senior frontend developer.
 
-### Design 1 - Basic
+Write React code for a simple frontend that has the following attributes:
+- the app is called "InTown"
+- the landing page should display a welcome message and a reference to the AWS server it is served from
+- there is only 1 additional page called "Trips"; include appropriate navigation between landing page and "Trips"
+- functionality for the Trips page:
+  - displays a table of existing trips; table columns are: id, destination, country, trip_start, trip_end, user_notified
+  - has functionality to create, edit, delete a trip; all these CRUD operations need to talk to APIs from a backend that already exists
+- endpoints of the backend:
+  - GET "/trips" --> list of all trips
+  - GET "/trips/{trip_id}" --> get one specific trip (if exists)
+  - POST "/trips/" --> expects Trip object (compare table columns)
+  - PUT "/trips/{trip_id}" --> expects Trip object (compare table columns) with the updated information
+  - DELETE "/trips/{trip_id}" --> deletes specific trip (if exists)
+- The backend is written in Python using FastAPI
+
+Use an appropriate theme to make it look slick.
+```
+
+The suggested implementation can be found in this repo at `src/frontend/...`. Needs to install materia UI:
+
+```bash
+npm install @mui/material @emotion/react @emotion/styled axios react-router-dom
+```
+
+API integration is handled via `axios`. Might need to adapt BE endpoints.
+
+> [!WARNING]
+> The suggested code by ChatGPT was not functional and required both, additional prompts to clarify errors and manual fixes to make it come together with the BE logic. It was, however, a good starting point.
+
 
 #### Simple backend to handle CRUD operation requests
 I set up a simple BE using FastAPI and defined the 4 basic CRUD ops to handle trips. The BE needs to communicate with both the frontend and the database to handle requests effectively.
 
+The code is located at `src/backend/...`.
+
+
+#### Communication of FE, BE, and DB
+The implementation of the networking component will vary depending on the architecture I am implementing. Let's start with the most basic design.
+
+
+### Design 1 - Basic
 
 #### Connecting to a db and perform queries
 To test connecting to an RDS DB, I'm building on example code from the [AWS documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.Connecting.Python.html). Ultimately, I need to figure out how to set up the db instance with the db schema that the application needs.
