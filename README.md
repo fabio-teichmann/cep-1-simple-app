@@ -96,12 +96,31 @@ For ASGs the following needs to be available / specified:
 For the architecture I created three different views: (1) a basic design to realize only the functionality for this project, (2) a design that is highly available, and (3) a design that is highly available and highly scalable.
 
 > [!IMPORTANT]
-> For the purpose of this project, I will implement a version of both, designs 2 and 3. I hope to gain relevant experience dealing with high availability and scalability in a fairly simple overall project.
+> For the purpose of this project, I will implement a version of all three, designs 1, 2 and 3. I hope to gain relevant experience dealing with high availability and scalability in a fairly simple overall project.
+
+For each design I include a **cost estimation** (using the [AWS Pricing Calculator](https://calculator.aws/#/)) for refion Frankfurt as a reference. The price point of a design might well impact a decision to realize the architecture or rather pivot to a different setup.
+
+> [!INFO]
+> Most components/services in the 3 designs fall under the free-tier. The cost estimates will be a reference for a life system.
+
 
 ### Basic design
 ![Basic Design](./img/cep-1-basic-design.png)
 
 The basic design focuses on functionality only: dedicated VPC with public and private subnet, an Internet Gateway to facilitate access to the outside world, an EC2 instance to host the dynamic website, and an RDS (PostgreSQL) instance to handle the data and CRUD requests.
+
+#### Cost estimation
+_Per Dec. 2024_
+
+| Pos. | AWS Service | Assumptions | Price Point (USD per month) |
+| :-: | :-- | :-- | :-: |
+| 1 | EC2 | 1 instance (t3.medium) <br>100% utilization per month | 37.14 |
+| 2 | RDS | 1 instance (20GB storage, single AZ) <br>100% utilization per month<br>25GB backup storage | 23.57 |
+
+Monthly total: **60.71 USD**
+
+
+#### Pros/cons
 
 | :white_check_mark: Pros | :o: Short-comings |
 | :-- | :-- |
@@ -133,6 +152,13 @@ This design builds on the previous design but introduces auto scaling groups for
 | recommended isolation of data into private subnet (security) | no user authentication / no separation of user data |
 | can react to increasing/decreasing traffic | potentially costly |
 
+
+
+## Phase 2.5 - Cost Estimation
+
+
+> [!IMPORTANT]
+> Most components/services in the 
 
 
 ## Phase 3 - Implementation
