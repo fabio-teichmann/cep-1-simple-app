@@ -65,9 +65,18 @@ Additionally, it is possible to add _auto-scaling_ to an RDS database to dynamic
 ### 🌐 Networking (and Security)
 This project broadly needs to accomplish two things: (1) host a simple application in an open space, and (2) host a database that the application can connect to to perform basic CRUD operations. The application should be accessible from the internet (HTTP/HTTPS), whereas, for security reasons, the database should only be accesbile to the application itself (TCP❓). 
 
-To accomplish this, I will set up a Virtual Private Cloud (**VPC**) with two **subnets**: one public (app), and the other private (db). The public subnet will require an **Internet Gateway** to be able to communicate with the internet. 
+To accomplish this, I will set up a Virtual Private Cloud (**VPC**) with two **subnets**: one public (app), and the other private (db). The public subnet will require an **Internet Gateway** (set up automatically) to be able to communicate with the internet. 
 To facilitate the communication I will set up **Security Groups** that allow the accesses as described above.
 
+#### RFC1918 - private addresses
+Today I learned that there are certain CIDR blocks defined as "private" addresses according to [RFC1918](https://datatracker.ietf.org/doc/html/rfc1918):
+- 10.0.0.0/16 -> ~16.7 mil. available IPs; used for large scale projects
+- 172.16.0.0/12 -> ~1 mil. available IPs; used for medium scale projects
+- 192.168.0.0/8 -> ~65k available IPs; used for small scale projects
+
+This is important to know because a subnet's **routing table** will disregard addresses that fall under these CIDR blocks if not specifically instructed. In other words, even if the "all encompassing" `0.0.0.0/0` appears in the routing table, a package destined for a private CIDR block will be dropped (if it's not VPC internal traffic).
+
+> According to this, I would chose the `192.168.0.0/8` CIDR block for this project, as it is a small scale project (for now) and it might make route handling easier for this learning experience.
 
 ### Availability & Scalability
 
