@@ -98,10 +98,10 @@ For the architecture I created three different views: (1) a basic design to real
 > [!IMPORTANT]
 > For the purpose of this project, I will implement a version of all three, designs 1, 2 and 3. I hope to gain relevant experience dealing with high availability and scalability in a fairly simple overall project.
 
-For each design I include a **cost estimation** (using the [AWS Pricing Calculator](https://calculator.aws/#/)) for refion Frankfurt as a reference. The price point of a design might well impact a decision to realize the architecture or rather pivot to a different setup.
+For each design I include a **cost estimation** (using the [AWS Pricing Calculator](https://calculator.aws/#/)) for _region Frankfurt_ as a reference. The price point of a design might well impact a decision to realize the architecture or rather pivot to a different setup.
 
-> [!INFO]
-> Most components/services in the 3 designs fall under the free-tier. The cost estimates will be a reference for a life system.
+> [!NOTE]
+> Most components/services in the 3 designs fall under the free-tier. The cost estimates will be a reference for a live system.
 
 
 ### Basic design
@@ -134,11 +134,25 @@ Monthly total: **60.71 USD**
 
 This design includes a redundant EC2 instance in a differt AZ to increase availability as well as a load balancer to ensure traffic can be routed to these instances. The database has a failover instance in a different AZ to ensure availability of data, even if the main instance fails.
 
+#### Cost estimation
+_Per Dec. 2024_
+
+| Pos. | AWS Service | Assumptions | Price Point (USD per month) |
+| :-: | :-- | :-- | :-: |
+| 1 | EC2 | 2 instances (t3.medium) <br>100% utilization per month | 70.08 |
+| 2 | RDS | 2 instances (20GB storage, multi-AZ (fail over instance)) <br>100% utilization per month<br>25GB backup storage | 131.76 |
+| 3 | Load Balancer | 1 instance ALB <br>30GB per month processed (EC2 targets) | 19.95 |
+
+Monthly total: **221.79 USD**
+
+
+#### Pros/cons
+
 | :white_check_mark: Pros | :o: Short-comings |
 | :-- | :-- |
 | design that ensures high availability of the application |  |
 | recommended isolation of data into private subnet (security) | no user authentication / no separation of user data |
-| adequate cost-for-service balance ❓ |  |
+|  | costs comparable to design 3 with less scalability options |
 
 
 ### Highly available and highly scalable design
@@ -146,19 +160,27 @@ This design includes a redundant EC2 instance in a differt AZ to increase availa
 
 This design builds on the previous design but introduces auto scaling groups for the EC2 instances that host the website. This provides scalability to the aplication in case higher traffic occurs or is expected. However, this sophisticated design requires substantial (AWS) resources and may not be a good choice for the simplicity of the application.
 
+#### Cost estimation
+_Per Dec. 2024_
+
+| Pos. | AWS Service | Assumptions | Price Point (USD per month) |
+| :-: | :-- | :-- | :-: |
+| 1 | EC2 | 2 instances (t3.medium) <br>100% utilization per month | 70.08 |
+| 2 | EC2 | 4 instance (t3.medium), auto-scale group <br>4h utilization per day | 23.36 |
+| 3 | RDS | 2 instances (20GB storage, multi-AZ (fail over instance)) <br>100% utilization per month<br>25GB backup storage | 131.76 |
+| 4 | Load Balancer | 1 instance ALB <br>40GB per month processed (EC2 targets + auto-scale instances) | 20.03 |
+
+Monthly total: **245.23 USD**
+
+
+#### Pros/cons
+
 | :white_check_mark: Pros | :o: Short-comings |
 | :-- | :-- |
 | sophisticated design for this use case; ensures both, high availability and high scalability | given the simplicity of the application, this is overkill (learning FTW) |
 | recommended isolation of data into private subnet (security) | no user authentication / no separation of user data |
 | can react to increasing/decreasing traffic | potentially costly |
 
-
-
-## Phase 2.5 - Cost Estimation
-
-
-> [!IMPORTANT]
-> Most components/services in the 
 
 
 ## Phase 3 - Implementation
