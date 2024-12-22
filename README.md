@@ -221,6 +221,9 @@ psql -h <db-endpoint> -U <user-name> -d <db-name> -p <port>
 ```
 _Note_: if nothing is set up, use `postgres` as a default db-name.
 
+> [!NOTE]
+> When connecting to the database in RDS, there was (obviously) no table/schema defined, yet. This will be needed to operate the app effectively. Next, I will investigate options to setup RDS appropriately to have the right schema and table(s) in place to be connected to the app.
+
 
 #### Setting up RDS with db schema
 The RDS instance I had setup previously did not contain the desired db schema for the simple app (nor did it include any sample data to play with later). I could set that up manually in the previous step (SSH into EC2, connect to RDS, create database and schema). However, for obvious reasons I don't want to do it that way (manual, cumbersome, error-prone, not automated). Hence, I am looking now into setting up a db instance that is pre-configured with the db schema (and sample data) that I need.
