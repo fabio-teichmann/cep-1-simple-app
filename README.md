@@ -288,18 +288,17 @@ The RDS instance I had setup previously did not contain the desired db schema fo
 
 | :pushpin: Action(s) | :mag_right: Observations | :o: Issues |
 | :-- | :-- | :-- |
-| Researching how I can achieve the db instance being setup with the right schema (and sample data) automatically. | - need a database dump (can be stored in S3)<br>- can use an EC2 instance to trigger the configuration within an existing RDS instance. |  |
-|  |  |  |
+| Researching how I can achieve the db instance being setup with the right schema (and sample data) automatically. | There are multiple ways this could be achieved:<br>1. [restoring data from dump in S3 in RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PostgreSQL.S3Import.html) (needs manual login to the DB to run this)<br>2. use event-trigger (e.g. DB launch) to initialize `Lambda` function. | `Lambda` functions were out of scope for this project. |
+| I will first try the more manual approach for learning purposes: store DB dump in S3, log into DB instance, install extensen (`aws_s3`) and import data from S3. |  |  |
+| | | |
 
-
-EC2 start-up script for DB config:
-
-tbd
+> [!NOTE]
+> I did not intend to go into `Lambda` functions yet with this project. However, the use case seemed to be most appropriately solved using them to automatically setup the DB.
 
 
 
 > [!IMPORTANT]
-> The degree of automation seems still somewhat limited (e.g. need to manually setup the RDS instance). In a future iteration, I will work on using IaC (TerraForm) to accomplish a fully automated setup of the infrastructure. Also, containerization seems to be able to simplify a couple of things in this setup.
+> The degree of automation seems still somewhat limited (e.g. need to manually setup the RDS instance). In a [future project](https://github.com/fabio-teichmann/cep-2-iac), I will work on using IaC (TerraForm) to accomplish a fully automated setup of the infrastructure. Also, containerization seems to be able to simplify a couple of things in this setup. This will be part of future projects as well.
 
 
 #### :bulb: Learnings:
