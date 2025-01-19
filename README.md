@@ -269,7 +269,7 @@ Installing psql inside the EC2 instance (amazon linux image):
 ```bash
 sudo yum update
 sudo yum search "postgres"
-sudo yum install postgres16 -y # corresponds with the engine in RDS
+sudo yum install postgresql16 -y # corresponds with the engine in RDS
 ```
 
 Connecting to RDS instance:
@@ -288,12 +288,19 @@ The RDS instance I had setup previously did not contain the desired db schema fo
 
 | :pushpin: Action(s) | :mag_right: Observations | :o: Issues |
 | :-- | :-- | :-- |
-| Researching how I can achieve the db instance being setup with the right schema (and sample data) automatically. | There are multiple ways this could be achieved:<br>1. [restoring data from dump in S3 in RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PostgreSQL.S3Import.html) (needs manual login to the DB to run this)<br>2. use event-trigger (e.g. DB launch) to initialize `Lambda` function. | `Lambda` functions were out of scope for this project. |
-| I will first try the more manual approach for learning purposes: store DB dump in S3, log into DB instance, install extensen (`aws_s3`) and import data from S3. |  |  |
+| Researching how I can achieve the db instance being setup with the right schema (and sample data) automatically. | There are multiple ways this could be achieved:<br>1. in console: instead of creating DB can restore from S3 (only MySQL / Aurora)<br>2. [restoring data from dump in S3 in RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PostgreSQL.S3Import.html) (needs manual login to the DB to run this)<br>3. use event-trigger (e.g. DB launch) to initialize `Lambda` function. | `Lambda` functions are out of scope for this project. |
+| For practical reasons, I will go the manual route: create instances, log into DB and set up schema with example data. | :white_check_mark: Setup worked as expected |  |
+| Next, I need to push the website code onto the EC2 instance and connect the content to the DB. To copy from local, I will use the [SCP](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/linux-file-transfer-scp.html) | Needed the `-r` flag for scp to copy folder(s) instead of oly a file;<br>target folder needs to exist on EC2;<br>:white_check_mark: files arrived on EC2;<br>Copies all files, even those that can be regenerated through initialization (e.g. Python virtual environment or JS modules) | Copy process is really slow --> **use dockerized application next time**.<br>In fact, it takes **too much** time and every change in the code will need to undergo the same process... |
+| Research how to best get a `Dockerfile` onthe the EC2 instance and execute that instead. | | |
+| For practicality reasons and to finish this project, I will try the more manual approach for learning purposes: store DB dump in S3, log into DB instance, install extension (`aws_s3`) and import data from S3. | _skipped_ |  |
 | | | |
 
+```
+scp -i /path/key-pair-name.pem /path/my-file.txt ec2-user@instance-public-dns-name:path/
+```
+<!-- 
 > [!NOTE]
-> I did not intend to go into `Lambda` functions yet with this project. However, the use case seemed to be most appropriately solved using them to automatically setup the DB.
+> I did not intend to go into `Lambda` functions yet with this project. However, the use case seemed to be most appropriately solved using them to automatically setup the DB. -->
 
 
 
