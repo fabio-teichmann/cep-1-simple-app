@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import List, Optional
 from uuid import UUID, uuid4
 
 from fastapi import Depends, FastAPI, HTTPException, Request
@@ -24,7 +24,7 @@ app.add_middleware(
 class Trip(BaseModel):
     id: UUID
     destination: str
-    country: str | None
+    country: Optional[str]
     trip_start: str
     trip_end: str
     notified_users: List[str] = []
