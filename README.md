@@ -304,17 +304,16 @@ In order to get the application to run on the instance, I need to do the followi
 
 1. Make required source code available on the instance (e.g., copy over)
 2. Ensure that all dependencies are installed
-3. Launch both, backend, and frontend
-4. Verify with public address of the instance, that the app is running
+3. Launch both, backend, and frontend &rarr; _partly skipped_
+4. Verify with public address of the instance, that the app is running &rarr; _skipped_
 
 
 | :pushpin: Action(s) | :mag_right: Observations | :o: Issues |
 | :-- | :-- | :-- |
 | Next, I need to push the website code onto the EC2 instance and connect the content to the DB. To copy from local, I will use the [SCP](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/linux-file-transfer-scp.html) | Needed the `-r` flag for scp to copy folder(s) instead of oly a file;<br>target folder needs to exist on EC2;<br>:white_check_mark: files arrived on EC2;<br>Copies all files, even those that can be regenerated through initialization (e.g. Python virtual environment or JS modules) | :o: Copy process is really slow &rarr; need alternative approach.<br>In fact, it takes **too much** time and every change in the code will need to undergo the same process... |
-| I found an alternative command: `rsync`:<br>- allows exclusion(s)<br>- can identify and copy changes only<br>Will use this approach for now and explore containerization in a later project (_boundaries_!) | Copying process seems to be much quicker<br>:white-check-mark: all files successfully copied over to the instance! | --- |
-| Now I need to ensure that dependencies are installed in the Linux environment on the EC2 instance and run the applications.<br>Let's start with the backend | - `pip` not available out of the box<br>- not all syntax is accepted (`\|` operator in Pydantic BaseModel field definition) | :o: I ran into another interesting issue: FastApi apparently doesn't have a detached mode to run an application. |
-| | | |
-| | | |
+| I found an alternative command: `rsync`:<br>- allows exclusion(s)<br>- can identify and copy changes only<br>Will use this approach for now and explore containerization in a later project (_boundaries_!) | Copying process seems to be much quicker<br>:white_check_mark: all files successfully copied over to the instance! | --- |
+| Now I need to ensure that dependencies are installed in the Linux environment on the EC2 instance and run the applications.<br>Let's start with the backend | - `pip` not available out of the box<br>- not all code syntax is accepted (`\|` operator in Pydantic BaseModel field definition) | :o: I ran into another interesting issue: FastApi apparently doesn't have a detached mode to run an application. |
+
 
 `scp` command:
 ```
@@ -330,14 +329,32 @@ rsync -avz -e "ssh -i '/path/key-name.pem'" --exclude 'backend/__pycache__' --ex
 `-z` &rarr; compress files during transfer<br>
 `-e` &rarr; specifies remote shell to use<br>
 
-<!-- 
-> [!NOTE]
-> I did not intend to go into `Lambda` functions yet with this project. However, the use case seemed to be most appropriately solved using them to automatically setup the DB. -->
+Installing dependencies:
+
+I used the following command to avoid failing single package installs to fail the whole: `cat requirements.txt | xargs -n 1 pip install`.
+
+
+#### Pivot to containers
+Although, I did not want to use containers in this project, given the complications, I will pivot to simplify. Also, containers are among the best practices for running applications, so...
+
+1. Create `Dockerfile`s for both, backend and frontend
+2. Push images to Docker Hub repository
+3. Install Docker on EC2 instance
+4. Pull and run docker images in detached mode (no `docker compose` at this point) 
+5. Verify application is running
+
+| :pushpin: Action(s) | :mag_right: Observations | :o: Issues |
+| :-- | :-- | :-- |
+| Create `Dockerfile` for frontend and backend | | |
+| | | |
+
 
 #### :bulb: Learnings:
 - connecting to an EC2 instance **without public IP** is more cumbersome and needs additional setups --> I will explore this for the other designs, as they naturally involve architecture that is required (e.g. elastic load balancer)
 - ensure that EC2 and RDS are **located in the same VPC** to connect
 - always ensure the **proper security group rules** are in place
+- app deployment
+  - ensure all prerequisites for dependencies are fulfilled
 
 
 
