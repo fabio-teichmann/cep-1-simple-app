@@ -281,15 +281,25 @@ I used the following command to avoid failing single package installs to fail th
 Although, I did not want to use containers in this project, given the complications, I will pivot to simplify. Also, containers are among the best practices for running applications, so...
 
 1. Create `Dockerfile`s for both, backend and frontend
-2. Push images to Docker Hub repository
+2. Push images to an image repository (like Docker Hub)
 3. Install Docker on EC2 instance
 4. Pull and run docker images in detached mode (no `docker compose` at this point) 
 5. Verify application is running
 
 | :pushpin: Action(s) | :mag_right: Observations | :o: Issues |
 | :-- | :-- | :-- |
-| Create `Dockerfile` for frontend and backend | | |
+| Create `Dockerfile` for frontend and backend and push them to registry | :white_check_mark: Images created and tested locally<br>:white_check_mark: push successful | Images may be pretty basic b*ches and not comply with highest security standards or comply with best practices. For now they are not containing any sensitive data though; that's good enough for this project. |
+| Install Docker on instance | :white_check_mark: installation worked | :o: Docker Daemon wasn't running by default<br>needed to manually start the socker and docker (see commands below) |
+| Next, pull images from registry to the instance. | :x: pull failed | :x: pulling from Docker Hub needs authentication &rarr; need to find a way to securely pass credentials to the instance to authenticate |
+| Researching secure ways to pass on credentials to EC2 | Options found:<br>1. SSH into instance and manually login <br> 2. add secrets to `docker compose`<br>3. add secret to `docker build` command<br>4. use AWS Secrets Manager | for 1.: manual<br>for 2.: I don't want to go into `docker compose` in this project<br>for 3.: this won't help me to authenticate to Docker Hub |
+| I've decided to use manual authentication for now and come back to the issue later. | | |
 | | | |
+
+Start Docker Daemon:
+```
+sudo systemctl start docker.socket
+sudo system start docker
+```
 
 
 #### :bulb: Learnings:
