@@ -292,7 +292,9 @@ Although, I did not want to use containers in this project, given the complicati
 | Install Docker on instance | :white_check_mark: installation worked | :o: Docker Daemon wasn't running by default<br>needed to manually start the socker and docker (see commands below) |
 | Next, pull images from registry to the instance. | :x: pull failed | :x: pulling from Docker Hub needs authentication &rarr; need to find a way to securely pass credentials to the instance to authenticate |
 | Researching secure ways to pass on credentials to EC2 | Options found:<br>1. SSH into instance and manually login <br> 2. add secrets to `docker compose`<br>3. add secret to `docker build` command<br>4. use AWS Secrets Manager | for 1.: manual<br>for 2.: I don't want to go into `docker compose` in this project<br>for 3.: this won't help me to authenticate to Docker Hub |
-| I've decided to use manual authentication for now and come back to the issue later. | | |
+| I've decided to use manual authentication for now and come back to the issue later. | Turns out the authentication issue was linked to something else: the EC2 user was not part of the docker user group.<br>Used `sudo usermod -a -G docker ec2-user` to fix that.<br>:white_check_mark: pulls successful | |
+| Running the docker images | :x: run not successful for both images | Got an interesting error message: `The requested image's platform (linux/arm64/v8) does not match the detected host platform (linux/amd64/v3) and no specific platform was requested` |
+| Re-build images requesting `--platform=linux/amd64` | :white_check_mark: containers run on instance| |
 | | | |
 
 Start Docker Daemon:
@@ -300,6 +302,12 @@ Start Docker Daemon:
 sudo systemctl start docker.socket
 sudo system start docker
 ```
+
+#### :bulb: Learnings:
+- to use docker commands on an instance, ensure the host (ec2-user) is part of the user group
+- docker containers can be tied to different networks on a single host
+- docker containers can be build for different platforms (e.g., linux/amd64)
+- 
 
 
 #### :bulb: Learnings:
@@ -318,3 +326,7 @@ tbd
 
 ## Limitations & Potential Next Steps
 tbd
+
+### Next steps
+- automate deployment using CI/CD pipeline
+- explore AWS's ECR and ECS for app deployment
