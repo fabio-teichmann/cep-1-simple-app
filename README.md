@@ -32,18 +32,18 @@ This project features a simple web app UI that facilitates CRUD operations with 
 - document all relevant steps and learnings
 
 
-## Phase 1 - Research
+# Phase 1 - Research
 The research for this project explores the following areas: (i) hosting of an application (static vs. dynamic), (ii) storage, (iii) required networking (and security best-practices), (iv) the concepts of availability and scalability and how they can be applied to this project. Within each area, I will explore potential options and their suitability / trade-offs for this project.
 
-### 💻 App Hosting
+## 💻 App Hosting
 For hosting app (content) we need to distinguish two important concepts to determine the right hosting environment: (1) static website, and (2) dynamic website.
 
-#### Static website
+### Static website
 A static website contains only consists of up to 3 main files (`.js`, `.html`, and `.css`) that generate the webpage. Static does not mean that the website itself won't change. It means that the website's content is not created dynamically on the server-side. However, the content, generally, does not change frequently.
 
 For static websites AWS offers a simple and cost-effective way of hosting it: through S3 bucket directly (static hosting).
 
-#### Dynamic website
+### Dynamic website
 A dynamic website is generated "on-the-fly", meaning on the server-side at runtime. Whenever content on the webpage is generated dynamically - e.g. calls to an API and results are displayed, calls to a database - then it needs different hosting.
 
 For dynamic websites AWS offers compute (**EC2**) resources that run the website content.
@@ -56,32 +56,32 @@ For dynamic websites AWS offers compute (**EC2**) resources that run the website
 > The database access can also be realized with a static website using cloud functions (Lambda) or calling the API of a backend that does the query work. The latter is a bit over the top for this minimal application. Using a Lambda function could be an interesting change to explore from both, a functionality perspective and a cost perspective. (Lambda functions are paid by execution)
 
 
-### 💾 Storage
+## 💾 Storage
 As a storage option I will explore AWS's **RDS** (relational database service) to spin up a basic PostgreSQL database. Next to being fully managed by AWS (i.e. patches, updates, recovery, etc.), an advantage relevant to this project it the possibility to set up fail-over databases. This means a separate instance of the same DB is created in a different availability zone (AZ) and synchronized with the main database. In case that the main DB fails (e.g. adverse climate), the connection gets switched to the failover DB and served from there until AZ1 becomes available again. This ensures high availability.
 
 Additionally, it is possible to add _auto-scaling_ to an RDS database to dynamically add storage capacity when nearing the end of the current free space. This can be controlled setting a maximum threshold. Auto-scaling, obviously, can ensure the scalability of the storage component of this architecture.
 
 
-### 🌐 Networking (and Security)
+## 🌐 Networking (and Security)
 This project broadly needs to accomplish two things: (1) host a simple application in an open space, and (2) host a database that the application can connect to to perform basic CRUD operations. The application should be accessible from the internet (HTTP/HTTPS), whereas, for security reasons, the database should only be accesbile to the application itself (TCP❓). 
 
 To accomplish this, I will set up a Virtual Private Cloud (**VPC**) with two **subnets**: one public (app), and the other private (db). The public subnet will require an **Internet Gateway** to be able to communicate with the internet. 
 To facilitate the communication I will set up **Security Groups** that allow the accesses as described above.
 
 
-### Availability & Scalability
+## Availability & Scalability
 
-#### Availability
+### Availability
 An application/service is **highly available** if it can be served by some instance (at all times). 
 
 For example, **AWS's RDS** (relational database service) provides several features that can ensure high availability of the service (in this case the access to a database):
 - *multi-AZ* (availability zone) creation --> creates an additional instance in a different AZ to provide automatic failover in case something happens to the main instance.
 - *read-replica* --> creates 1 (or more) copies of the database in the same or different AZ or even a different region. This eleviates read traffic from the main database instance. Replicas are asynchronously updated and synced with the main database to ensure they contain up-to-date data
 
-#### Scalability
+### Scalability
 Refers to horizontal or vertical scaling of a service. **Horizontal scaling** means adding more instances of the same service (e.g. EC2 instances) to deal with the workload. **Vertical scaling** means an instance increases/decreases its performace internally (e.g. switching the EC2 type to a more powerful one).
 
-#### Auto-scaling groups
+### Auto-scaling groups
 AWS's **EC2** component offers another feature that offers both, availability, and scalability: _auto-scale groups_ (ASGs). An ASG allows to automatically spawn and re-spawn (in case of instance failure / unhealthiness) compute instances based on the configuration. This can happen in a single or multiple subnets, i.e. in a single or multiple AZs.
 
 For ASGs the following needs to be available / specified:
@@ -92,13 +92,13 @@ For ASGs the following needs to be available / specified:
 
 
 
-## Phase 2 - Architecture Design
+# Phase 2 - Architecture Design
 For the architecture I created three different views: (1) a basic design to realize only the functionality for this project, (2) a design that is highly available, and (3) a design that is highly available and highly scalable.
 
 > [!IMPORTANT]
 > For the purpose of this project, I will implement a version of both, designs 2 and 3. I hope to gain relevant experience dealing with high availability and scalability in a fairly simple overall project.
 
-### Basic design
+## Basic design
 ![Basic Design](./img/cep-1-basic-design.png)
 
 The basic design focuses on functionality only: dedicated VPC with public and private subnet, an Internet Gateway to facilitate access to the outside world, an EC2 instance to host the dynamic website, and an RDS (PostgreSQL) instance to handle the data and CRUD requests.
@@ -110,7 +110,7 @@ The basic design focuses on functionality only: dedicated VPC with public and pr
 | relatively cheap implementation | no resource handling for downtimes |
 
 
-### Highly available design
+## Highly available design
 ![HA Design](./img/cep-1-ha.png)
 
 This design includes a redundant EC2 instance in a differt AZ to increase availability as well as a load balancer to ensure traffic can be routed to these instances. The database has a failover instance in a different AZ to ensure availability of data, even if the main instance fails.
@@ -122,7 +122,7 @@ This design includes a redundant EC2 instance in a differt AZ to increase availa
 | adequate cost-for-service balance ❓ |  |
 
 
-### Highly available and highly scalable design
+## Highly available and highly scalable design
 ![HA-HS Design](./img/cep-1-ha-hs.png)
 
 This design builds on the previous design but introduces auto scaling groups for the EC2 instances that host the website. This provides scalability to the aplication in case higher traffic occurs or is expected. However, this sophisticated design requires substantial (AWS) resources and may not be a good choice for the simplicity of the application.
@@ -135,17 +135,17 @@ This design builds on the previous design but introduces auto scaling groups for
 
 
 
-## Phase 3 - Implementation
+# Phase 3 - Implementation
 Before implementing any of the designs above, I first need to prepare the scripts for a basic app that will use the database capabilities and display some results in an UI.
 
-### Suitable app example
+## Suitable app example
 For the basic app I will use a basic trip scheduler that allows to view, create, edit, and delete trips. Trips are displayed to the user accordingly. To achieve this I will need to create the following:
 
 - a basic frontend to display the trips table to the user
 - a database that stores the trip information
 - a backend that handles requests to the database and forwards the information to the frontend
 
-#### Simple frontend
+### Simple frontend
 I am no frontend expert, so I will start off by using a suggestion from ChatGPT. I used the following prompt:
 
 ```txt
@@ -181,19 +181,19 @@ API integration is handled via `axios`. Might need to adapt BE endpoints.
 > The suggested code by ChatGPT was not functional and required both, additional prompts to clarify errors and manual fixes to make it come together with the BE logic. It was, however, a good starting point.
 
 
-#### Simple backend to handle CRUD operation requests
+### Simple backend to handle CRUD operation requests
 I set up a simple BE using FastAPI and defined the 4 basic CRUD ops to handle trips. The BE needs to communicate with both the frontend and the database to handle requests effectively.
 
 The code is located at `src/backend/...`.
 
 
-#### Communication of FE, BE, and DB
+### Communication of FE, BE, and DB
 The implementation of the networking component will vary depending on the architecture I am implementing. Let's start with the most basic design.
 
 
-### Design 1 - Basic
+## Design 1 - Basic
 
-#### Connecting to a db and perform queries
+### Connecting to a db and perform queries
 To test connecting to an RDS DB, I'm building on example code from the [AWS documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.Connecting.Python.html). Ultimately, I need to figure out how to set up the db instance with the db schema that the application needs.
 
 | :pushpin: Action(s) | :mag_right: Observations | :o: Issues |
@@ -225,7 +225,15 @@ _Note_: if nothing is set up, use `postgres` as a default db-name.
 > When connecting to the database in RDS, there was (obviously) no table/schema defined, yet. This will be needed to operate the app effectively. Next, I will investigate options to setup RDS appropriately to have the right schema and table(s) in place to be connected to the app.
 
 
-#### Setting up RDS with db schema
+#### :bulb: Learnings:
+- connecting to an EC2 instance **without public IP** is more cumbersome and needs additional setups --> I will explore this for the other designs, as they naturally involve architecture that is required (e.g. elastic load balancer)
+- ensure that EC2 and RDS are **located in the same VPC** to connect
+- always ensure the **proper security group rules** are in place
+- app deployment
+  - ensure all prerequisites for dependencies are fulfilled
+
+
+### Setting up RDS with db schema
 The RDS instance I had setup previously did not contain the desired db schema for the simple app (nor did it include any sample data to play with later). I could set that up manually in the previous step (SSH into EC2, connect to RDS, create database and schema). However, for obvious reasons I don't want to do it that way (manual, cumbersome, error-prone, not automated). Hence, I am looking now into setting up a db instance that is pre-configured with the db schema (and sample data) that I need.
 
 
@@ -242,7 +250,7 @@ The RDS instance I had setup previously did not contain the desired db schema fo
 > The degree of automation seems still somewhat limited (e.g. need to manually setup the RDS instance). In a [future project](https://github.com/fabio-teichmann/cep-2-iac), I will work on using IaC (TerraForm) to accomplish a fully automated setup of the infrastructure. Also, **containerization** seems to be able to simplify a couple of things in this setup. This will be part of future projects as well.
 
 
-#### Deploy application on EC2
+### Deploy application on EC2
 In order to get the application to run on the instance, I need to do the following:
 
 1. Make required source code available on the instance (e.g., copy over)
@@ -277,7 +285,7 @@ Installing dependencies:
 I used the following command to avoid failing single package installs to fail the whole: `cat requirements.txt | xargs -n 1 pip install`.
 
 
-#### Pivot to containers
+### Pivot to containers
 Although, I did not want to use containers in this project, given the complications, I will pivot to simplify. Also, containers are among the best practices for running applications, so...
 
 1. Create `Dockerfile`s for both, backend and frontend
@@ -306,27 +314,19 @@ sudo system start docker
 #### :bulb: Learnings:
 - to use docker commands on an instance, ensure the host (ec2-user) is part of the user group
 - docker containers can be tied to different networks on a single host
-- docker containers can be build for different platforms (e.g., linux/amd64)
+- docker containers can be build for different platforms (e.g., linux/amd64, linux/arm64) &rarr; needs to agree with host machine platform
 - 
 
 
-#### :bulb: Learnings:
-- connecting to an EC2 instance **without public IP** is more cumbersome and needs additional setups --> I will explore this for the other designs, as they naturally involve architecture that is required (e.g. elastic load balancer)
-- ensure that EC2 and RDS are **located in the same VPC** to connect
-- always ensure the **proper security group rules** are in place
-- app deployment
-  - ensure all prerequisites for dependencies are fulfilled
 
-
-
-## Phase 4 - Testing
+# Phase 4 - Testing
 tbd
 
 
 
-## Limitations & Potential Next Steps
+# Limitations & Potential Next Steps
 tbd
 
-### Next steps
+## Next steps
 - automate deployment using CI/CD pipeline
 - explore AWS's ECR and ECS for app deployment
